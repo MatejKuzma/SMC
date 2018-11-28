@@ -1,0 +1,53 @@
+	PROGRAM NA DYNAMICKÉ INJEKTOVANIE KÓDU DO VIRTUÁLNEJ PAMATE PROCESORU
+
+Špecifikácia
+
+Program vykonáva injekciu strojového kódu do virtuálnej pamäte procesu dynamicky, počas behu procesu.
+Program počíta lineárnu funkciu typu a*x + b, kde lineárna funkcia je plne modifikovateľná
+pre rôzne parametre, pričom na výpočet lineárnej funkcie používa kód, ktorý je zašifrovaný.
+injektovaný dynamicky počas behu programu. Program je implementovaný pre 64 bitovú
+architektúru Little endianu v jazyku C.
+
+Princíp fungovania
+
+Program pri zavolaní funkcie, ktorá obsahuje samomodifikujúci kód najprv hľadá voľné miesto
+vo virtuálnej pamäti procesu, ktoré je nájdené vďaka súboru /proc/PID/maps, kde PID je ID procesu.
+Proces hľadá taký záznam, pre ktorý nieje použité žiadne zariadenie, vtedy je miesto prázdne.
+Ak miesto nieje nájdené neuskutoční sa vnesenie kódu do pamäte. Následne sa program snaží získať
+práva na zapisovanie, čítanie a spúštanie na adrese, ktorá bola nájdená v predošlom kroku. 
+Ak je prístup získaný pokračuje sa v načítaní zašifrovaného strojového kódu zo súboru,
+ktorý je najprv dešifrovaný cez posúvnu šifru. Po načítaní šifrovaného kódu je kód vnesený na adresu, 
+ktorá bola získaná v predošlých krokoch. Po tom, ako sa vykoná vnesený kód je zaistené aby kód 
+odovzdal výsledok a aby sa proces vrátil na pôvodné miesto vykonávania bez toho, aby porušil daľší beh procesu.
+
+Analýza zdrojového kódu
+
+V tejto časti sa nachádza analýza významných častí implementácie zadania.
+
+1. long getProcessFreeSpace(pid_t PID, long * retAddr)
+
+1111111111111111111111111111111111111111+
+
+
+Použité prostriedky
+Program bol implementovaný v jazyku C a kompilovaný kompilátorom gcc.
+Verzia kompilátoru gcc: 
+	gcc (Ubuntu 7.3.0-27ubuntu1~18.04) 7.3.0
+Verzia kompilátoru bola získaná cez príkaz:
+	$ gcc --version.
+ 
+Priklad použitia
+
+Program je kompilovaný vďaka makefile súboru, teda na kompiláciu zdrojového kódu stačí zadať príkaz
+make.
+
+Pre šifrovanie súboru je potreba spustiť program s prepínačom -p, kedy zašifruje súbor CodeFile
+
+Testovanie programu sa dá spustiť bez prepínača.
+
+Záznam o testovaní:
+Osoba: Filip Pavkovček
+
+1111111111111111111111111111111111111111111111111111111111111111111111
+Prostredie: Virtuálne prostredie vo VM virtualbox, OS Linux Ubuntu 18.04 pre 64 bitovú architektúru.
+Test prebehol úspešne.
